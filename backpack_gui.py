@@ -8,6 +8,18 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QAction, QKeySequence, QIcon, QPixmap, QPainter, QColor, QPen
 import os
+from register_extension import register_file_type
+
+def check_first_run():
+    settings_file = os.path.join(os.path.dirname(__file__), "settings.json")
+    if not os.path.exists(settings_file):
+        # Первый запуск
+        register_file_type()
+        # Создаем файл настроек
+        with open(settings_file, 'w') as f:
+            json.dump({"first_run": False}, f)
+        return True
+    return False
 
 class CustomListWidget(QListWidget):
     def __init__(self, parent=None):
@@ -717,6 +729,8 @@ class BackpackCalculator(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    # Проверяем первый запуск перед созданием главного окна
+    check_first_run()
     window = BackpackCalculator()
     window.show()
-    sys.exit(app.exec()) 
+    sys.exit(app.exec())
